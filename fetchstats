@@ -6,6 +6,7 @@
 #
 
 URL="https://opendns.com/dashboard"
+HEADING="Rank,Domain,Total,Blacklisted,Blocked by Category,Blocked as Phishing,Blocked as Malware"
 
 usage() {
 	echo "Usage: $0 <username> <network_id> <YYYY-MM-DD> [<YYYY-MM-DD>]" >&2
@@ -60,14 +61,14 @@ curl --silent --insecure \
 	> /dev/null
 
 # Fetch pages of Top Domains
-echo "Rank,Domain,Requests"
+echo "$HEADING"
 GO="yes"
 PAGE=1
 while [ "yes" == "$GO" ] ; do
 	CSV=$(curl --silent --insecure \
 		--cookie "$COOKIEJAR" \
 		"$URL/stats/$NETWORK_ID/topdomains/$DATE/page$PAGE.csv" \
-		| grep -v "Rank,Domain,Requests"
+		| grep -v "$HEADING"
 	)
 	if [ -z "$CSV" ] ; then GO="no"
 	else echo "$CSV" ; fi

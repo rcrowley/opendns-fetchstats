@@ -39,7 +39,7 @@ echo -n "Password for $USERNAME: " >&2
 stty -echo
 read PASSWORD
 stty echo
-echo ""
+echo "" >&2
 
 COOKIEJAR=$(mktemp /tmp/opendns-fetchstats-XXXXXX)
 

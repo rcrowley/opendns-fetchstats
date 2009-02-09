@@ -1,0 +1,77 @@
+#!/bin/bash
+
+#
+# OpenDNS Stats Fetcher
+# Richard Crowley <richard@opendns.com>
+#
+
+URL="https://opendns.com/dashboard"
+
+usage() {
+	echo "Usage: $0 <username> <network_id> <YYYY-MM-DD> [<YYYY-MM-DD>]" >&2
+	exit 1
+}
+
+date_check() {
+	case "$1" in
+		[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])
+			;;
+		*)
+			echo "Error: dates must be in the YYYY-MM-DD form" >&2
+			exit 2
+			;;
+	esac
+}
+
+USERNAME="$1"
+if [ -z "$USERNAME" ] ; then usage ; fi
+NETWORK_ID="$2"
+if [ -z "$NETWORK_ID" ] ; then usage ; fi
+date_check "$3"
+if [ -z "$4" ] ; then
+	DATE="$3"
+else
+	date_check "$4"
+	DATE="$3to$4"
+fi
+
+echo -n "Password for $USERNAME: " >&2
+stty -echo
+read PASSWORD
+stty echo
+echo ""
+
+COOKIEJAR=$(mktemp /tmp/opendns-fetchstats-XXXXXX)
+
+# Get the signin page's form token
+FORMTOKEN=$(curl --silent --insecure \
+	--cookie-jar "$COOKIEJAR" \
+	"$URL/signin" \
+	| grep formtoken \
+	| sed 's/^.*name="formtoken" value="\([0-9a-f]*\)".*$/\1/' \
+)
+
+# Sign into OpenDNS
+curl --silent --insecure \
+	--cookie "$COOKIEJAR" \
+	--cookie-jar "$COOKIEJAR" \
+	--data "formtoken=$FORMTOKEN&username=$USERNAME&password=$PASSWORD&sign_in_submit=foo" \
+	"$URL/signin" \
+	> /dev/null
+
+# Fetch pages of Top Domains
+echo "Rank,Domain,Requests"
+GO="yes"
+PAGE=1
+while [ "yes" == "$GO" ] ; do
+	CSV=$(curl --silent --insecure \
+		--cookie "$COOKIEJAR" \
+		"$URL/stats/$NETWORK_ID/topdomains/$DATE/page$PAGE.csv" \
+		| grep -v "Rank,Domain,Requests"
+	)
+	if [ -z "$CSV" ] ; then GO="no"
+	else echo "$CSV" ; fi
+	PAGE=$(($PAGE + 1))
+done
+
+rm -f "$COOKIEJAR"

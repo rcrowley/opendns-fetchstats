@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #
 # OpenDNS Stats Fetcher
@@ -64,7 +64,7 @@ curl --silent --insecure \
 echo "$HEADING"
 GO="yes"
 PAGE=1
-while [ "yes" == "$GO" ] ; do
+while [ "yes" = "$GO" ] ; do
 	CSV=$(curl --silent --insecure \
 		--cookie "$COOKIEJAR" \
 		"$URL/stats/$NETWORK_ID/topdomains/$DATE/page$PAGE.csv" \

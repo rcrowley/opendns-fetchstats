@@ -6,7 +6,7 @@
 #
 
 URL="https://opendns.com/dashboard"
-HEADING="Rank,Domain,Total,Blacklisted,Blocked by Category,Blocked as Phishing,Blocked as Malware"
+HEADING="Rank,Domain,Total,Blacklisted,Blocked by Category,Blocked by an Adult Category,Blocked as Phishing,Blocked as Malware,Resolved by SmartCache"
 
 usage() {
 	echo "Usage: $0 <username> <network_id> <YYYY-MM-DD> [<YYYY-MM-DD>]" >&2

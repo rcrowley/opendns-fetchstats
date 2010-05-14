@@ -2,6 +2,7 @@
 
 #
 # OpenDNS Stats Fetcher
+# Brian Hartvigsen <brian.hartvigsen@opendns.com>
 # Richard Crowley <richard@opendns.com>
 #
 
@@ -23,7 +24,7 @@ date_check() {
 	esac
 }
 
-USERNAME=$(echo -n $1 |  od -t x1 -A n | tr " " %)
+USERNAME=$1
 if [ -z "$USERNAME" ] ; then usage ; fi
 NETWORK_ID="$2"
 if [ -z "$NETWORK_ID" ] ; then usage ; fi
@@ -40,16 +41,19 @@ stty -echo
 read PASSWORD
 stty echo
 echo "" >&2
-PASSWORD=$(echo -n "$PASSWORD" |  od -t x1 -A n | tr " " %)
-COOKIEJAR=$(mktemp /tmp/opendns-fetchstats-XXXXXX)
+
+PASSWORD=`echo -n "$PASSWORD" | od -A n -t x1 | sed 's/ *$//;s/[ ]\{1,\}/%/g'`
+USERNAME=`echo -n "$USERNAME" | od -A n -t x1 | sed 's/ *$//;s/[ ]\{1,\}/%/g'`
+
+COOKIEJAR=`mktemp /tmp/opendns-fetchstats-XXXXXX`
 
 # Get the signin page's form token
-FORMTOKEN=$(curl --silent --insecure \
+FORMTOKEN=`curl --silent --insecure \
 	--cookie-jar "$COOKIEJAR" \
 	"$URL/signin" \
 	| grep formtoken \
 	| sed 's/^.*name="formtoken" value="\([0-9a-f]*\)".*$/\1/' \
-)
+`
 
 # Sign into OpenDNS
 curl --silent --insecure \
@@ -62,13 +66,13 @@ curl --silent --insecure \
 # Fetch pages of Top Domains
 GO="yes"
 PAGE=1
-while [ "yes" = "$GO" ] ; do
-	CSV=$(curl --silent --insecure \
+while [ "yes" == "$GO" ] ; do
+	CSV=`curl --silent --insecure \
 		--cookie "$COOKIEJAR" \
-		"$URL/stats/$NETWORK_ID/topdomains/$DATE/page$PAGE.csv"
-	)
+		"$URL/stats/$NETWORK_ID/topdomains/$DATE/page$PAGE.csv" \
+	`
 	if [ "$PAGE" == "1" ]; then
-		HEADING=`echo "$CSV" | head -n 1 -`
+		HEADING=`echo "$CSV" | head -n 1`
 	else
 		CSV=`echo "$CSV" | grep -v "$HEADING"`
 	fi
@@ -79,3 +83,4 @@ while [ "yes" = "$GO" ] ; do
 done
 
 rm -f "$COOKIEJAR"
+

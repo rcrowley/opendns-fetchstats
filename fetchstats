@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 # OpenDNS Stats Fetcher
@@ -56,12 +56,16 @@ FORMTOKEN=`curl --silent --insecure \
 `
 
 # Sign into OpenDNS
-curl --silent --insecure \
+SIGNIN=`curl --silent --insecure \
 	--cookie "$COOKIEJAR" \
 	--cookie-jar "$COOKIEJAR" \
 	--data "formtoken=$FORMTOKEN&username=$USERNAME&password=$PASSWORD&sign_in_submit=foo" \
-	"$URL/signin" \
-	> /dev/null
+	"$URL/signin"`
+
+if [ "$SIGNIN" != "" ]; then
+	echo "Login failed.  Check username and password." >&2
+	exit 2
+fi
 
 # Fetch pages of Top Domains
 GO="yes"
@@ -72,6 +76,10 @@ while [ "yes" == "$GO" ] ; do
 		"$URL/stats/$NETWORK_ID/topdomains/$DATE/page$PAGE.csv" \
 	`
 	if [ "$PAGE" == "1" ]; then
+		if [ "$CSV" == "" ]; then
+			echo "You can not access $NETWORK_ID" >&2
+			exit 2
+		fi
 		HEADING=`echo "$CSV" | head -n 1`
 	else
 		CSV=`echo "$CSV" | grep -v "$HEADING"`

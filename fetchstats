@@ -42,8 +42,8 @@ read PASSWORD
 stty echo
 echo "" >&2
 
-PASSWORD=`echo -n "$PASSWORD" | od -A n -t x1 | sed 's/ *$//;s/[ ]\{1,\}/%/g'`
-USERNAME=`echo -n "$USERNAME" | od -A n -t x1 | sed 's/ *$//;s/[ ]\{1,\}/%/g'`
+PASSWORD=`echo -n "$PASSWORD" | od -A n -t x1 | tr -d '\n' | sed 's/ *$//;s/[ ]\{1,\}/%/g'`
+USERNAME=`echo -n "$USERNAME" | od -A n -t x1 | tr -d '\n' | sed 's/ *$//;s/[ ]\{1,\}/%/g'`
 
 COOKIEJAR=`mktemp /tmp/opendns-fetchstats-XXXXXX`
 

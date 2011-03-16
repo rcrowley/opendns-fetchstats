@@ -1,3 +1,9 @@
+' OpenDNS Stats Fetch for Windows
+' Based on original fetchstats script from Richard Crowley
+' Brian Hartvigsen <brian.hartvigsen@opendns.com>
+'
+' Usage: cscript /NoLogo fetchstats.vbs <username> <network-id> <YYYY-MM-DD> [<YYYY-MM-DD>]
+
 ' Instantiate object here so that cookies will be tracked.
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 

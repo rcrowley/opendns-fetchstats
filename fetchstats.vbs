@@ -85,6 +85,9 @@ Do While True
 		If LenB(data) = 0 Then
 			WScript.StdErr.Write "You can not access " & Network & vbCrLf
 			WScript.Quit 2
+		ElseIf InStr(data, "<!DOCTYPE") Then
+		    Wscript.StdErr.Write "Error retrieving data.  Date range may be outside of available data."
+		    Wscript.Quit 2
 		End If
 	Else
 		' First line is always header

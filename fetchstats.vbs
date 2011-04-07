@@ -51,9 +51,17 @@ If Wscript.Arguments.Count = 4 Then
 End If
 
 WScript.StdErr.Write "Password: "
+
+' Are they running Vista or 7?
+On Error Resume Next
 Set objPassword = CreateObject("ScriptPW.Password") 
-Password = objPassword.GetPassword()
+If objPassword <> Null Then
+    Password = objPassword.GetPassword()
+Else
+    Password = WScript.StdIn.ReadLine
+End If
 Wscript.StdErr.Write vbCrLf
+On Error GoTo 0
 
 Set regEx = New RegExp
 regEx.IgnoreCase = true

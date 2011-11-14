@@ -22,7 +22,7 @@ Function GetUrlData(strUrl, strMethod, strData)
 	End If
 End Function
 
-URL="https://www.opendns.com/dashboard"
+URL="https://dashboard.opendns.com"
 
 Sub Usage()
 	Wscript.StdErr.Write "Usage: <username> <network_id> <YYYY-MM-DD> [<YYYY-MM-DD>]" & vbCrLf

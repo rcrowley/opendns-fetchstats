@@ -6,7 +6,7 @@
 # Richard Crowley <richard@opendns.com>
 #
 
-URL="https://opendns.com/dashboard"
+URL="https://dashboard.opendns.com"
 
 usage() {
 	echo "Usage: $0 <username> <network_id> <YYYY-MM-DD> [<YYYY-MM-DD>]" >&2

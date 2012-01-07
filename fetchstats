@@ -6,7 +6,7 @@
 # Richard Crowley <richard@opendns.com>
 #
 
-URL="https://opendns.com/dashboard"
+URL="https://dashboard.opendns.com"
 
 usage() {
 	echo "Usage: $0 <username> <network_id> <YYYY-MM-DD> [<YYYY-MM-DD>]" >&2
@@ -81,6 +81,10 @@ while [ "yes" == "$GO" ] ; do
 			exit 2
 		fi
 		HEADING=`echo "$CSV" | head -n 1`
+		if [[ "$HEADING" == *DOCTYPE* ]]; then
+		    echo "Error retrieving data.  Date range may be outside of available data." >&2
+	        exit 2
+		fi
 	else
 		CSV=`echo "$CSV" | grep -v "$HEADING"`
 	fi

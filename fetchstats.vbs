@@ -47,7 +47,7 @@ If Not regDate.Test(DateRange) Then: Usage
 If Wscript.Arguments.Count = 4 Then
 	ToDate = Wscript.Arguments.Item(3)
 	If Not regDate.Test(toDate) Then: Usage
-	DateRage = DateRange & "to" & ToDate
+	DateRange = DateRange & "to" & ToDate
 End If
 
 WScript.StdErr.Write "Password: "

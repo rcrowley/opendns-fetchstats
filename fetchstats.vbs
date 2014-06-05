@@ -22,7 +22,8 @@ Function GetUrlData(strUrl, strMethod, strData)
 	End If
 End Function
 
-URL="https://dashboard.opendns.com"
+LOGINURL="https://login.opendns.com/?source=dashboard"
+CSVURL="https://dashboard.opendns.com"
 
 Sub Usage()
 	Wscript.StdErr.Write "Usage: <username> <network_id> <YYYY-MM-DD> [<YYYY-MM-DD>]" & vbCrLf
@@ -67,12 +68,12 @@ Set regEx = New RegExp
 regEx.IgnoreCase = true
 regEx.Pattern = ".*name=""formtoken"" value=""([0-9a-f]*)"".*"
 
-data = GetUrlData(URL & "/signin", "GET", "")
+data = GetUrlData(LOGINURL, "GET", "")
 
 Set Matches = regEx.Execute(data)
 token = Matches(0).SubMatches(0)
 
-data = GetUrlData(URL & "/signin", "POST", "formtoken=" & token & "&username=" & Escape(Username) & "&password=" & Escape(Password) & "&sign_in_submit=foo")
+data = GetUrlData(LOGINURL, "POST", "formtoken=" & token & "&username=" & Escape(Username) & "&password=" & Escape(Password) & "&sign_in_submit=foo")
 If Len(data) <> 0 Then
 	Wscript.StdErr.Write "Login Failed. Check username and password" & vbCrLf
 	WScript.Quit 1
@@ -80,7 +81,7 @@ End If
 
 page=1
 Do While True
-	data = GetUrlData(URL & "/stats/" & Network & "/topdomains/" & DateRange & "/page" & page & ".csv", "GET", "")
+	data = GetUrlData(CSVURL & "/stats/" & Network & "/topdomains/" & DateRange & "/page" & page & ".csv", "GET", "")
 	If page = 1 Then
 		If LenB(data) = 0 Then
 			WScript.StdErr.Write "You can not access " & Network & vbCrLf

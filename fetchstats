@@ -6,7 +6,8 @@
 # Richard Crowley <richard@opendns.com>
 #
 
-URL="https://dashboard.opendns.com"
+CSVURL="https://dashboard.opendns.com"
+LOGINURL="https://login.opendns.com/?source=dashboard"
 
 usage() {
 	echo "Usage: $0 <username> <network_id> <YYYY-MM-DD> [<YYYY-MM-DD>]" >&2
@@ -50,7 +51,7 @@ COOKIEJAR=`mktemp /tmp/opendns-fetchstats-XXXXXX`
 # Get the signin page's form token
 FORMTOKEN=`curl --silent --insecure \
 	--cookie-jar "$COOKIEJAR" \
-	"$URL/signin" \
+	"$LOGINURL" \
 	| grep formtoken \
 	| sed 's/^.*name="formtoken" value="\([0-9a-f]*\)".*$/\1/' \
 `
@@ -60,7 +61,7 @@ SIGNIN=`curl --silent --insecure \
 	--cookie "$COOKIEJAR" \
 	--cookie-jar "$COOKIEJAR" \
 	--data "formtoken=$FORMTOKEN&username=$USERNAME&password=$PASSWORD&sign_in_submit=foo" \
-	"$URL/signin"`
+	"$LOGINURL"`
 
 if [ "$SIGNIN" != "" ]; then
 	echo "Login failed.  Check username and password." >&2
@@ -73,7 +74,7 @@ PAGE=1
 while [ "yes" == "$GO" ] ; do
 	CSV=`curl --silent --insecure \
 		--cookie "$COOKIEJAR" \
-		"$URL/stats/$NETWORK_ID/topdomains/$DATE/page$PAGE.csv" \
+		"$CSVURL/stats/$NETWORK_ID/topdomains/$DATE/page$PAGE.csv" \
 	`
 	if [ "$PAGE" == "1" ]; then
 		if [ "$CSV" == "" ]; then
